@@ -1,5 +1,5 @@
 use hdk::prelude::*;
-use profiles_integrity::*;
+use hc_zome_profiles_integrity::*;
 use crate::utils::*;
 
 

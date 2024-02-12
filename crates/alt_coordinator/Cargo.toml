@@ -16,6 +16,6 @@ crate-type = ["cdylib", "rlib"]
 serde = { version = "=1.0.163", default-features = false }
 hdk = { version = "=0.2.6", default-features = false }
 
-profiles_integrity = { package="hc_zome_profiles_integrity", path = "../../profiles/crates/integrity" }
+hc_zome_profiles_integrity = "=0.2.0"
 
 
