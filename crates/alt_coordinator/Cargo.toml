@@ -3,6 +3,7 @@ name = "profiles_alt_coordinator"
 version = "0.2.0"
 rust-version = "1.70.0"
 edition = "2021"
+authors = ["ddd-mtl"]
 description = "Profiles zome for any Holochain app"
 documentation = "https://holochain-open-dev.github.io/profiles"
 homepage = "https://docs.rs/hc_zome_profiles"
