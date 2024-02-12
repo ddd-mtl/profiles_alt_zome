@@ -8,6 +8,7 @@ description = "Profiles zome for any Holochain app"
 documentation = "https://holochain-open-dev.github.io/profiles"
 homepage = "https://docs.rs/hc_zome_profiles"
 repository = "https://github.com/ddd-mtl/profiles_alt_zome"
+license = "MIT"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
