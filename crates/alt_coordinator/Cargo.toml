@@ -1,0 +1,17 @@
+[package]
+name = "profiles_alt_coordinator"
+version = "0.2.0"
+rust-version = "1.70.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+
+[dependencies]
+serde = { version = "=1.0.163", default-features = false }
+hdk = { version = "=0.2.6", default-features = false }
+
+profiles_integrity = { package="hc_zome_profiles_integrity", path = "../../profiles/crates/integrity" }
+
+
