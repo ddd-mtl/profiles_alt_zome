@@ -4,7 +4,7 @@ use hc_zome_profiles_integrity::*;
 
 ///
 pub fn prefix_path(nickname: String) -> ExternResult<TypedPath> {
-   // conver to lowercase for path for ease of search
+   // convert to lowercase for path for ease of search
    let lower_nickname = nickname.to_lowercase();
    let prefix: String = lower_nickname.chars().take(3).collect();
 

@@ -58,11 +58,10 @@ pub fn update_profile(pair: (Profile, AgentPubKey)) -> ExternResult<Record> {
         )))?;
    if previous_profile.nickname.ne(&profile.nickname) {
       let previous_prefix_path = prefix_path(previous_profile.nickname)?;
-      let links = get_links(
-         previous_prefix_path.path_entry_hash()?,
+      let links = get_links(GetLinksInputBuilder::try_new(
+         AnyLinkableHash::from(previous_prefix_path.path_entry_hash()?),
          LinkTypes::PathToAgent,
-         None,
-      )?;
+      )?.build())?;
 
       for l in links {
          if let Ok(pub_key) = AgentPubKey::try_from(l.target) {
@@ -102,13 +101,9 @@ pub fn search_agents(nickname_filter: String) -> ExternResult<Vec<AgentPubKey>> 
    }
 
    let prefix_path = prefix_path(nickname_filter.clone())?;
-   let links = get_links(
-      prefix_path.path_entry_hash()?,
-      LinkTypes::PathToAgent,
-      Some(LinkTag::new(
-         nickname_filter.to_lowercase().as_bytes().to_vec(),
-      )),
-   )?;
+   let input = GetLinksInputBuilder::try_new(AnyLinkableHash::from(prefix_path.path_entry_hash()?), LinkTypes::PathToAgent)?
+       .tag_prefix(LinkTag::new(nickname_filter.to_lowercase().as_bytes().to_vec())).build();
+   let links = get_links(input)?;
 
    let mut agents: Vec<AgentPubKey> = vec![];
 
@@ -125,8 +120,7 @@ pub fn search_agents(nickname_filter: String) -> ExternResult<Vec<AgentPubKey>> 
 /// Returns the profile for the given agent, if they have created it.
 #[hdk_extern]
 pub fn get_profile(agent_pub_key: AgentPubKey) -> ExternResult<Option<Record>> {
-   let links = get_links(agent_pub_key, LinkTypes::AgentToProfile, None)?;
-
+   let links = get_links(GetLinksInputBuilder::try_new(agent_pub_key, LinkTypes::AgentToProfile)?.build())?;
    if links.len() == 0 {
       return Ok(None);
    }
@@ -168,11 +162,10 @@ pub fn get_agents_with_profile(_: ()) -> ExternResult<Vec<AgentPubKey>> {
    let get_links_input: Vec<GetLinksInput> = children
       .into_iter()
       .map(|path| {
-         Ok(GetLinksInput::new(
-            path.path_entry_hash()?.into(),
-            LinkTypes::PathToAgent.try_into_filter()?,
-            None,
-         ))
+         Ok(GetLinksInputBuilder::try_new(
+            AnyLinkableHash::from(path.path_entry_hash()?),
+            LinkTypes::PathToAgent.try_into_filter()?
+         ).unwrap().build())
       })
       .collect::<ExternResult<Vec<GetLinksInput>>>()?;
 

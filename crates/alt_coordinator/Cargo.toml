@@ -15,9 +15,9 @@ crate-type = ["cdylib", "rlib"]
 
 
 [dependencies]
-serde = { version = "=1.0.163", default-features = false }
-hdk = { version = "=0.2.6", default-features = false }
+serde.workspace = true
+hdk.workspace = true
 
-hc_zome_profiles_integrity = "=0.2.0"
+hc_zome_profiles_integrity = {path = "../integrity"}
 
 
