@@ -5,6 +5,6 @@
 #![allow(unused_attributes)]
 
 mod utils;
-mod signals;
+mod callbacks;
 mod zfns;
 
