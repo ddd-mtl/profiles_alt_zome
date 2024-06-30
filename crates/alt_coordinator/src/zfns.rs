@@ -115,6 +115,7 @@ pub fn find_profile(agent_pub_key: AgentPubKey) -> ExternResult<Option<(ActionHa
 
 /// Gets all the agents that have created a profile in this DHT.
 #[hdk_extern]
+#[feature(zits_blocking)]
 pub fn probe_profiles(_: ()) -> ExternResult<()> {
    let path = Path::from("all_profiles").typed(LinkTypes::PrefixPath)?;
    let children = path.children_paths()?;
