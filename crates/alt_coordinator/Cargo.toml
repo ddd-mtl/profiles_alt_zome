@@ -1,18 +1,18 @@
 [package]
 name = "profiles_alt_coordinator"
 version = "0.2.0"
-rust-version = "1.70.0"
+rust-version = "1.75.0"
 edition = "2021"
 authors = ["ddd-mtl"]
-description = "Profiles zome for any Holochain app"
-documentation = "https://holochain-open-dev.github.io/profiles"
-homepage = "https://docs.rs/hc_zome_profiles"
+description = "Alternate coordinator zome for Profiles"
 repository = "https://github.com/ddd-mtl/profiles_alt_zome"
 license = "MIT"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
+[lints]
+workspace = true
 
 [dependencies]
 serde.workspace = true

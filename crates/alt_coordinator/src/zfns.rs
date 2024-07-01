@@ -2,7 +2,7 @@ use hdk::prelude::*;
 use zome_utils::*;
 use zome_signals::*;
 use hc_zome_profiles_integrity::*;
-use crate::utils::*;
+
 
 ///
 #[hdk_extern]
@@ -103,7 +103,7 @@ pub fn find_profile(agent_pub_key: AgentPubKey) -> ExternResult<Option<(ActionHa
    }
    let link = links[0].clone();
    let profile_ah = link.target.into_action_hash().unwrap();
-   let record = fetch_latest(profile_ah)?;
+   let record = get_latest_record(profile_ah)?;
    let profile = get_typed_from_record::<Profile>(record.clone())?;
    ///
    emit_new_entry_signal(record.clone(), false)?;
@@ -146,3 +146,10 @@ pub fn probe_profiles(_: ()) -> ExternResult<()> {
 }
 
 
+///
+pub fn prefix_path(nickname: String) -> ExternResult<TypedPath> {
+   // convert to lowercase for path for ease of search
+   let lower_nickname = nickname.to_lowercase();
+   let prefix: String = lower_nickname.chars().take(3).collect();
+   return Path::from(format!("all_profiles.{}", prefix)).typed(LinkTypes::PrefixPath);
+}
