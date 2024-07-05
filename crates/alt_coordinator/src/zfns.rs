@@ -101,11 +101,12 @@ pub fn find_profile(agent_pub_key: AgentPubKey) -> ExternResult<Option<(ActionHa
    if links.len() == 0 {
       return Ok(None);
    }
-   let link = links[0].clone();
-   let profile_ah = link.target.into_action_hash().unwrap();
+   let link = &links[0];
+   let profile_ah = link.target.clone().into_action_hash().unwrap();
    let record = get_latest_record(profile_ah)?;
    let profile = get_typed_from_record::<Profile>(record.clone())?;
    ///
+   emit_link_signal(link.clone(), StateChange::Create(false))?;
    emit_new_entry_signal(record.clone(), false)?;
    ///
    Ok(Some((record.action_address().to_owned(), profile)))
