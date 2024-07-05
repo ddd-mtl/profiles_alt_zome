@@ -4,10 +4,12 @@ use zome_signals::*;
 use hc_zome_profiles_integrity::*;
 
 
-///
+/// (zits currently cant handle destructured function arguments)
 #[hdk_extern]
 #[feature(zits_blocking)]
-pub fn create_profile((profile, agent_address): (Profile, AgentPubKey)) -> ExternResult<ActionHash> {
+pub fn create_profile(pair: (Profile, AgentPubKey)) -> ExternResult<ActionHash> {
+   let profile = pair.0;
+   let agent_address = pair.1;
    std::panic::set_hook(Box::new(zome_panic_hook));
    /// Create Entry
    let ah = create_entry(EntryTypes::Profile(profile.clone()))?;
@@ -34,7 +36,9 @@ pub fn create_profile((profile, agent_address): (Profile, AgentPubKey)) -> Exter
 ///
 #[hdk_extern]
 #[feature(zits_blocking)]
-pub fn update_profile((profile, agent_address): (Profile, AgentPubKey)) -> ExternResult<ActionHash> {
+pub fn update_profile(pair: (Profile, AgentPubKey)) -> ExternResult<ActionHash> {
+   let profile = pair.0;
+   let agent_address = pair.1;
    std::panic::set_hook(Box::new(zome_panic_hook));
    /// Update Entry
    let Some((previous_profile, previous_record, previous_link)) = find_latest_profile(agent_address.clone())?
