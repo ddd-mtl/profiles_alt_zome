@@ -15,10 +15,10 @@ unused_attributes = "allow"
 
 [workspace.dependencies]
 serde = { version = "=1.0.203", default-features = false }
-hdi = { version = "=0.5.0-dev.12", default-features = false }
-hdk = { version = "=0.4.0-dev.14", default-features = false }
-zome_utils = { git = "https://github.com/ddd-mtl/zome-utils", branch = "hdk-4.0-dev.20" }
-zome_signals = { git = "https://github.com/ddd-mtl/zome-signals", branch = "hdk-4.0-dev.20" }
+hdi = "=0.4.2"
+hdk = "=0.3.2"
+zome_utils = { git = "https://github.com/ddd-mtl/zome-utils", branch = "hdk-3.2" }
+zome_signals = { git = "https://github.com/ddd-mtl/zome-signals", branch = "hdk-3.2" }
 
 [profile.dev]
 lto = false
