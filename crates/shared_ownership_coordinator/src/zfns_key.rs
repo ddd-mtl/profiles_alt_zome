@@ -79,7 +79,7 @@ pub struct RecvKeyInput {
 #[hdk_extern]
 #[feature(zits_blocking)]
 pub fn recv_shared_key(input: RecvKeyInput) -> ExternResult<()> {
-  //TODO: check if we are declared owner of this key
+  //TODO: check if we have published ownership of this key
   let _ah = create_entry(SharedOwnershipEntry::SharedKey(SharedKey { key_ref: input.key.key_ref }))?;
   /// TODO: maybe need to add it to lair?
   // let key_ref = x_salsa20_poly1305_shared_secret_create_random(Some(input.key.key_ref))?;
@@ -113,6 +113,7 @@ pub fn request_shared_key(input: RequestKeyInput) -> ExternResult<()> {
     if owners.is_empty() {
       return zome_error!("No owners found for shared key");
     }
+    // TODO: pick random owner
     owners[0].0.clone()
   };
   ///
