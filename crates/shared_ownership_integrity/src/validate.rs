@@ -44,7 +44,7 @@ fn validate_create_entry(creation_action: EntryCreationAction, entry: Entry) -> 
 
 
 ///
-fn validate_create_link(create_link: HoloHashed<CreateLink>, _signature: Signature) -> ExternResult<ValidateCallbackResult>  {
+fn validate_create_link(create_link: HoloHashed<CreateLink>, signature: Signature) -> ExternResult<ValidateCallbackResult>  {
    // debug!("validate_create_link(): {:?}", create_link);
    let typed_link_type = SharedOwnershipLinkType::from_type(create_link.zome_index, create_link.link_type)?.unwrap();
    match typed_link_type {
@@ -54,14 +54,20 @@ fn validate_create_link(create_link: HoloHashed<CreateLink>, _signature: Signatu
          let unsafe_bytes = UnsafeBytes::from(tag_bytes.clone());
          let ser_bytes = SerializedBytes::from(unsafe_bytes);
          let tag_shared: TagShared = TagShared::try_from(ser_bytes).unwrap();
-         // FIXME: check signature is base's signing of target
+         let Some(owner) = create_link.content.base_address.clone().into_agent_pub_key()
+         else {return Ok(ValidateCallbackResult::Invalid("Link base is not an AgentPubKey".to_string()))};
+         /// Check signature is base's signing of target
+         let signed = verify_signature(owner, signature, create_link.target_address.clone())?;
+         if !signed {
+            return Ok(ValidateCallbackResult::Invalid("Invalid signature".to_string()))
+         }
          /// Check link author is an owner
          let owner: AgentPubKey = create_link.content.author.clone().into();
          let Some(shared_ah) = create_link.content.target_address.into_action_hash()
             else {return Ok(ValidateCallbackResult::Invalid("Link target is not an ActionHash".to_string()))};
          let is_owner = is_owner_from_shared_link(&owner, shared_ah, tag_shared.maybe_owner_link_ah)?;
          if !is_owner {
-            return Ok(ValidateCallbackResult::Invalid("Link author is not an onwer".to_string()))
+            return Ok(ValidateCallbackResult::Invalid("Link author is not an owner".to_string()))
          }
          Ok(ValidateCallbackResult::Valid)
       },

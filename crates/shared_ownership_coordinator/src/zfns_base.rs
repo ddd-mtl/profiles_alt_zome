@@ -8,10 +8,8 @@ use shared_ownership_integrity::*;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PublishOwnershipInput {
-  pub agent: AgentPubKey,
   pub shared_ah: ActionHash,
-  pub signature: Signature,
-  pub as_author: bool,
+  pub non_author: Option<(AgentPubKey, Signature)>, // if no signature then caller must be author
 }
 
 
@@ -20,34 +18,31 @@ pub struct PublishOwnershipInput {
 #[feature(zits_blocking)]
 pub fn publish_ownership(input: PublishOwnershipInput) -> ExternResult<(ActionHash, ActionHash)> {
   std::panic::set_hook(Box::new(zome_panic_hook));
-  /// TODO: check signature?
   /// Get owner proof
-  let maybe_owner_link_ah = if input.as_author {
-    None
+  let mut maybe_owner_link_ah = None;
+  let (agent, signature) = if let Some((agent, signed)) = input.non_author.clone() {
+    let owners = get_owners(input.shared_ah.clone())?;
+    let Some(pair) = owners.iter().filter(|&(owner, _link_ah)| owner == &agent).next()
+      else { return zome_error!("Agent is not an owner of shared entry"); };
+    maybe_owner_link_ah = Some(pair.clone().1);
+    (agent, Some(signed.clone()))
   } else {
-      let owners = get_owners(input.shared_ah.clone())?;
-      let Some(pair) = owners.iter().filter(|&(owner, link_ah)| owner == &input.agent).next()
-        else { return zome_error!("Agent is not an owner of shared entry"); };
-      // for (owner, link_ah) in owners {
-      //   if owner == input.agent {
-      //     return link_ah;
-      //   }
-      // }
-      // return zome_error!("Agent is not an owner of shared entry");
-      Some(pair.clone().1)
+    /// Sign it
+    let signed = sign(agent_info()?.agent_latest_pubkey, input.shared_ah.clone())?;
+    (agent_info()?.agent_latest_pubkey, Some(signed))
   };
   /// Create tag
   let tag: TagShared = TagShared {
-    signature: input.signature,
+    signature: signature.unwrap(),
     maybe_owner_link_ah,
   };
   /// Create Shared link
-  let shared_link_ah = create_link(input.agent.clone(), input.shared_ah.clone(), SharedOwnershipLinkType::Shared, obj2Tag(tag)?)?;
+  let shared_link_ah = create_link(agent.clone(), input.shared_ah.clone(), SharedOwnershipLinkType::Shared, obj2Tag(tag)?)?;
   /// Create OwnerLink
   let tag: TagOwner = TagOwner { shared_link_ah: shared_link_ah.clone() };
-  let owner_link_ah = create_link(input.shared_ah.clone(), input.agent, SharedOwnershipLinkType::Owner, obj2Tag(tag)?)?;
+  let owner_link_ah = create_link(input.shared_ah.clone(), agent, SharedOwnershipLinkType::Owner, obj2Tag(tag)?)?;
   /// Create SharedPath Link
-  if input.as_author {
+  if input.non_author.is_none() {
     let tp = Path::from(ROOT_ANCHOR_SHAREDS).typed(SharedOwnershipLinkType::SharedPath)?;
     tp.ensure()?;
     let ph = tp.path_entry_hash()?;
@@ -102,51 +97,3 @@ pub fn get_owners(shared_ah: ActionHash) -> ExternResult<Vec<(AgentPubKey, Actio
   Ok(pairs)
 }
 
-
-///
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct OfferOwnershipInput {
-  pub agent: AgentPubKey,
-  pub shared_ah: ActionHash,
-  //pub signature: Sign,
-  //pub as_author: bool,
-}
-
-
-///
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct AppTip {
-  #[serde(rename = "type")]
-  type_type: String,
-  shared_ah: ActionHash,
-  maybe_sign: Option<Signature>,
-}
-
-
-///
-#[hdk_extern]
-pub fn offer_ownership(input: OfferOwnershipInput) -> ExternResult<()> {
-  let app_tip = AppTip {
-    type_type: "offer".to_string(),
-    shared_ah: input.shared_ah,
-    maybe_sign: None,
-  };
-  let data = encode(&app_tip).unwrap();
-  let tip: TipProtocol = TipProtocol::App(UnsafeBytes::from(data).into());
-  return cast_tip(CastTipInput {tip, peers: vec![input.agent]});
-}
-
-
-///
-#[hdk_extern]
-pub fn request_ownership(input: PublishOwnershipInput) -> ExternResult<()> {
-  let app_tip = AppTip {
-    type_type: "request".to_string(),
-    shared_ah: input.shared_ah,
-    maybe_sign: Some(input.signature),
-  };
-  let data = encode(&app_tip).unwrap();
-  let tip: TipProtocol = TipProtocol::App(UnsafeBytes::from(data).into());
-  return cast_tip(CastTipInput {tip, peers: vec![input.agent]});
-}

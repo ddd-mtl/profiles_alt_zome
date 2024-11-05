@@ -1,6 +1,7 @@
 mod callbacks;
-mod base_zfns;
-mod key_zfns;
+mod zfns_base;
+mod zfns_signals;
+mod zfns_key;
 
 use hdk::prelude::*;
 
