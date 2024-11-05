@@ -21,4 +21,5 @@ zome_signals.workspace = true
 
 shared_ownership_integrity = {path = "../shared_ownership_integrity"}
 
+bincode = "1.3"
 

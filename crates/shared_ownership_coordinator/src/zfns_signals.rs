@@ -17,9 +17,9 @@ pub struct OfferOwnershipInput {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AppTip {
   #[serde(rename = "type")]
-  type_type: String,
-  shared_ah: ActionHash,
-  maybe_sign: Option<Signature>,
+  pub type_type: String,
+  pub shared_ah: ActionHash,
+  pub maybe_sign: Option<Signature>,
 }
 
 
@@ -52,7 +52,7 @@ pub struct RequestOwnershipInput {
 #[hdk_extern]
 pub fn request_ownership(input: RequestOwnershipInput) -> ExternResult<()> {
   let app_tip = AppTip {
-    type_type: "request".to_string(),
+    type_type: "request_ownership".to_string(),
     shared_ah: input.shared_ah,
     maybe_sign: Some(input.signature),
   };

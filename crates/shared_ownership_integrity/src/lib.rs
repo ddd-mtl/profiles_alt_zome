@@ -22,13 +22,14 @@ pub const ROOT_ANCHOR_SHAREDS: &'static str = "all_shareds";
 #[hdk_entry_helper]
 #[derive(Clone, PartialEq)]
 pub struct SharedKey {
-    pub key: String,
+    pub key_ref: XSalsa20Poly1305KeyRef,
 }
 
 
 #[hdk_entry_types]
 #[unit_enum(SharedOwnershipEntryTypes)]
 pub enum SharedOwnershipEntry {
+    #[entry_type(required_validations = 1, visibility = "private")]
     SharedKey(SharedKey),
 }
 
