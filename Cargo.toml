@@ -4,7 +4,7 @@ members = [
     #"crates/integrity",
     "crates/alt_coordinator",
     "crates/shared_ownership_integrity",
-    #"crates/shared_ownership_coordinator",
+    "crates/shared_ownership_coordinator",
 ]
 
 [workspace.package]

@@ -46,9 +46,9 @@ fn validate_create_entry(creation_action: EntryCreationAction, entry: Entry) -> 
 ///
 fn validate_create_link(create_link: HoloHashed<CreateLink>, _signature: Signature) -> ExternResult<ValidateCallbackResult>  {
    // debug!("validate_create_link(): {:?}", create_link);
-   let typed_link_type = SharedOwnershipEntryLinkType::from_type(create_link.zome_index, create_link.link_type)?.unwrap();
+   let typed_link_type = SharedOwnershipLinkType::from_type(create_link.zome_index, create_link.link_type)?.unwrap();
    match typed_link_type {
-      SharedOwnershipEntryLinkType::Shared => {
+      SharedOwnershipLinkType::Shared => {
          /// Convert tag
          let tag_bytes = create_link.tag.clone().into_inner();
          let unsafe_bytes = UnsafeBytes::from(tag_bytes.clone());
@@ -65,7 +65,7 @@ fn validate_create_link(create_link: HoloHashed<CreateLink>, _signature: Signatu
          }
          Ok(ValidateCallbackResult::Valid)
       },
-      SharedOwnershipEntryLinkType::Owner => {
+      SharedOwnershipLinkType::Owner => {
          /// Convert tag
          let tag_bytes = create_link.tag.clone().into_inner();
          let unsafe_bytes = UnsafeBytes::from(tag_bytes.clone());
@@ -82,9 +82,7 @@ fn validate_create_link(create_link: HoloHashed<CreateLink>, _signature: Signatu
          }
          Ok(ValidateCallbackResult::Valid)
       },
-      SharedOwnershipEntryLinkType::PrefixPath => {
-         Ok(ValidateCallbackResult::Valid)
-      },
+      _ => Ok(ValidateCallbackResult::Valid),
       //_ => panic!("Unknown link type"),
    }
 }
@@ -105,11 +103,11 @@ fn is_owner_from_shared_link(agent: &AgentPubKey, shared_ah: ActionHash, maybe_o
       else { return  Err(wasm_error!("Record does not hold a CreateLink")); };
    let Some(target_agent) = create_link.target_address.clone().into_agent_pub_key()
       else {return Ok(false)};
-   let Some(typed_link_type) = SharedOwnershipEntryLinkType::from_type(create_link.zome_index, create_link.link_type)?
+   let Some(typed_link_type) = SharedOwnershipLinkType::from_type(create_link.zome_index, create_link.link_type)?
       else {return Ok(false)};
    /// Check if it's an Owner link from shared_ah to agent
    let is_valid_owner_link =
-       typed_link_type == SharedOwnershipEntryLinkType::Owner
+       typed_link_type == SharedOwnershipLinkType::Owner
        && &target_agent == agent
        && create_link.base_address == shared_ah.clone().into();
    if !is_valid_owner_link {
@@ -139,11 +137,11 @@ fn is_owner_from_owner_link(agent: &AgentPubKey, shared_ah: ActionHash, shared_l
       else { return  Err(wasm_error!("Record does not hold a CreateLink")); };
    let Some(base_agent) = create_link.base_address.clone().into_agent_pub_key()
       else {return Ok(false)};
-   let Some(typed_link_type) = SharedOwnershipEntryLinkType::from_type(create_link.zome_index, create_link.link_type)?
+   let Some(typed_link_type) = SharedOwnershipLinkType::from_type(create_link.zome_index, create_link.link_type)?
       else {return Ok(false)};
    /// Check it's a Shared link from agent to shared_ah
    let is_valid =
-     typed_link_type == SharedOwnershipEntryLinkType::Shared
+     typed_link_type == SharedOwnershipLinkType::Shared
    && &base_agent == agent
    && create_link.target_address == shared_ah.clone().into();
    /// Done

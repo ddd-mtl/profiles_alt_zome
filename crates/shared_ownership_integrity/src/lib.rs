@@ -39,22 +39,23 @@ pub enum SharedOwnershipEntry {
 
 #[hdk_link_types]
 #[derive(Serialize, Deserialize)]
-pub enum SharedOwnershipEntryLinkType {
-    PrefixPath,
+pub enum SharedOwnershipLinkType {
+    SharedPath,
+    SharedEntry,
     Shared,
     Owner,
 }
 
 
 /// Tag data used for validation
-#[derive(Debug, Serialize, Deserialize, SerializedBytes)]
+#[derive(Debug, Clone, Serialize, Deserialize, SerializedBytes)]
 pub struct TagShared {
-    signature: SerializedBytes,
-    maybe_owner_link_ah: Option<ActionHash>,
+    pub signature: Signature,
+    pub maybe_owner_link_ah: Option<ActionHash>,
 }
 
 /// Tag data used for validation
-#[derive(Debug, Serialize, Deserialize, SerializedBytes)]
+#[derive(Debug, Clone, Serialize, Deserialize, SerializedBytes)]
 pub struct TagOwner {
-    shared_link_ah: ActionHash,
+    pub shared_link_ah: ActionHash,
 }

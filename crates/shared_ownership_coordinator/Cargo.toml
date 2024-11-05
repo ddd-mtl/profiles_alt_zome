@@ -19,6 +19,6 @@ hdk.workspace = true
 zome_utils.workspace = true
 zome_signals.workspace = true
 
-hc_zome_profiles_integrity = {path = "../integrity"}
+shared_ownership_integrity = {path = "../shared_ownership_integrity"}
 
 
