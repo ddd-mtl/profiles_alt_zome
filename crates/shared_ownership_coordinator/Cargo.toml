@@ -1,0 +1,24 @@
+[package]
+name = "shared_ownership_coordinator"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+authors = ["ddd-mtl"]
+description = "Zome for having multiple agents share ownership of any entry"
+repository = "https://github.com/ddd-mtl/profiles_alt_zome"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[lints]
+workspace = true
+
+[dependencies]
+serde.workspace = true
+hdk.workspace = true
+zome_utils.workspace = true
+zome_signals.workspace = true
+
+hc_zome_profiles_integrity = {path = "../integrity"}
+
+

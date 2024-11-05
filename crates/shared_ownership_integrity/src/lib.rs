@@ -8,7 +8,6 @@ use hdi::prelude::*;
 ///-------------------------------------------------------------------------------------------------
 
 /// DNA/Zome names
-pub const VINES_DEFAULT_ROLE_NAME: &'static str = "rVines";
 pub const DEFAULT_COORDINATOR_ZOME_NAME: &'static str = "zSharedOwnership";
 pub const DEFAULT_INTEGRITY_ZOME_NAME: &'static str = "shared_ownership_integrity";
 
@@ -27,7 +26,7 @@ pub struct SharedKey {
 }
 
 
-#[hdk_entry_defs]
+#[hdk_entry_types]
 #[unit_enum(SharedOwnershipEntryTypes)]
 pub enum SharedOwnershipEntry {
     SharedKey(SharedKey),
@@ -48,12 +47,14 @@ pub enum SharedOwnershipEntryLinkType {
 
 
 /// Tag data used for validation
+#[derive(Debug, Serialize, Deserialize, SerializedBytes)]
 pub struct TagShared {
     signature: SerializedBytes,
     maybe_owner_link_ah: Option<ActionHash>,
 }
 
 /// Tag data used for validation
+#[derive(Debug, Serialize, Deserialize, SerializedBytes)]
 pub struct TagOwner {
     shared_link_ah: ActionHash,
 }
