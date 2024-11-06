@@ -21,7 +21,7 @@ pub fn publish_ownership(input: PublishOwnershipInput) -> ExternResult<(ActionHa
   /// Get owner proof
   let mut maybe_owner_link_ah = None;
   let (agent, signature) = if let Some((agent, signed)) = input.non_author.clone() {
-    let owners = get_owners(input.shared_ah.clone())?;
+    let owners = probe_owners(input.shared_ah.clone())?;
     let Some(pair) = owners.iter().filter(|&(owner, _link_ah)| owner == &agent).next()
       else { return zome_error!("Agent is not an owner of shared entry"); };
     maybe_owner_link_ah = Some(pair.clone().1);
@@ -61,7 +61,7 @@ pub fn publish_ownership(input: PublishOwnershipInput) -> ExternResult<(ActionHa
 
 ///
 #[hdk_extern]
-pub fn pull_shareds(_: ()) -> ExternResult<Vec<ActionHash>> {
+pub fn probe_shareds(_: ()) -> ExternResult<Vec<ActionHash>> {
   std::panic::set_hook(Box::new(zome_panic_hook));
   let root_path = Path::from(ROOT_ANCHOR_SHAREDS).typed(SharedOwnershipLinkType::SharedPath)?;
   let ph = root_path.path_entry_hash()?;
@@ -79,7 +79,7 @@ pub fn pull_shareds(_: ()) -> ExternResult<Vec<ActionHash>> {
 
 ///
 #[hdk_extern]
-pub fn get_owners(shared_ah: ActionHash) -> ExternResult<Vec<(AgentPubKey, ActionHash)>> {
+pub fn probe_owners(shared_ah: ActionHash) -> ExternResult<Vec<(AgentPubKey, ActionHash)>> {
   std::panic::set_hook(Box::new(zome_panic_hook));
   let links = get_links(link_input(shared_ah, SharedOwnershipLinkType::Owner, None))?;
   let pairs = links

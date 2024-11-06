@@ -2,7 +2,7 @@ use hdk::prelude::*;
 use zome_utils::*;
 use zome_signals::*;
 use shared_ownership_integrity::*;
-use crate::zfns_base::get_owners;
+use crate::zfns_base::probe_owners;
 use crate::zfns_signals::AppTip;
 
 ///
@@ -109,7 +109,7 @@ pub fn request_shared_key(input: RequestKeyInput) -> ExternResult<()> {
   let tip: TipProtocol = TipProtocol::App(UnsafeBytes::from(data).into());
   ///
   let agent = if let Some(agent) = input.maybe_agent { agent } else {
-    let owners = get_owners(input.shared_ah)?;
+    let owners = probe_owners(input.shared_ah)?;
     if owners.is_empty() {
       return zome_error!("No owners found for shared key");
     }
@@ -118,4 +118,25 @@ pub fn request_shared_key(input: RequestKeyInput) -> ExternResult<()> {
   };
   ///
   return cast_tip(CastTipInput {tip, peers: vec![agent]});
+}
+
+
+///
+#[hdk_extern]
+pub fn query_shared_keys(_: ()) -> ExternResult<Vec<ActionHash>> {
+  std::panic::set_hook(Box::new(zome_panic_hook));
+  /// Query type
+  let query_args = ChainQueryFilter::default()
+    .include_entries(false)
+    .action_type(ActionType::Create)
+    //.action_type(ActionType::Update)
+    .entry_type(SharedOwnershipEntryTypes::SharedKey.try_into().unwrap());
+  let records = query(query_args)?;
+  /// Get entries for all results
+  let mut key_ahs: Vec<ActionHash> = Vec::new();
+  for record in records {
+    key_ahs.push(record.action_hashed().clone().into_hash())
+  }
+  /// Done
+  Ok(key_ahs)
 }
