@@ -15,8 +15,8 @@ unused_attributes = "allow"
 
 [workspace.dependencies]
 serde = { version = "=1.0.203", default-features = false }
-hdi = "=0.4.2"
-hdk = "=0.3.2"
+hdi = "=0.4.4"
+hdk = "=0.3.4"
 zome_utils = { git = "https://github.com/ddd-mtl/zome-utils", branch = "hdk-3.2" }
 zome_signals = { git = "https://github.com/ddd-mtl/zome-signals", branch = "hdk-3.2" }
 
