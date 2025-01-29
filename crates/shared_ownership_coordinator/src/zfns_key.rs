@@ -77,7 +77,7 @@ pub struct RecvKeyInput {
 
 
 #[hdk_extern]
-#[ignore(zits)]
+#[ignore = "zits"]
 pub fn recv_shared_key(input: RecvKeyInput) -> ExternResult<()> {
   //TODO: check if we have published ownership of this key
   let _ah = create_entry(SharedOwnershipEntry::SharedKey(SharedKey { key_ref: input.key.key_ref }))?;
