@@ -11,6 +11,11 @@ pub fn create_profile(pair: (Profile, AgentPubKey)) -> ExternResult<ActionHash> 
    let profile = pair.0;
    let agent_address = pair.1;
    std::panic::set_hook(Box::new(zome_panic_hook));
+   /// Check
+   let maybe_profile = find_latest_profile(agent_address.clone())?;
+   if let Some(profile) = maybe_profile {
+      return error("Agent already has a Profile");
+   }
    /// Create Entry
    let ah = create_entry(EntryTypes::Profile(profile.clone()))?;
    /// Create Links
