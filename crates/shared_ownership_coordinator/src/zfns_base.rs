@@ -28,8 +28,8 @@ pub fn publish_ownership(input: PublishOwnershipInput) -> ExternResult<(ActionHa
     (agent, Some(signed.clone()))
   } else {
     /// Sign it
-    let signed = sign(agent_info()?.agent_latest_pubkey, input.shared_ah.clone())?;
-    (agent_info()?.agent_latest_pubkey, Some(signed))
+    let signed = sign(agent_info()?.agent_initial_pubkey, input.shared_ah.clone())?;
+    (agent_info()?.agent_initial_pubkey, Some(signed))
   };
   /// Create tag
   let tag: TagShared = TagShared {

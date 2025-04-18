@@ -62,7 +62,7 @@ pub fn send_shared_key(input: SendKeyInput) -> ExternResult<()> {
   let (_eh, key) = get_typed_from_ah::<SharedKey>(input.key_ah.clone())?;
   let send = RecvKeyInput {key_ah: input.key_ah, key};
   let resp = call_remote(input.recipient, DEFAULT_COORDINATOR_ZOME_NAME, FunctionName("recv_shared_key".into()), None, send)?;
-  decode_response(resp)?;
+  decode_response::<()>(resp)?;
   Ok(())
 }
 

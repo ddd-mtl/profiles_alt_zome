@@ -13,7 +13,7 @@ pub fn create_profile(pair: (Profile, AgentPubKey)) -> ExternResult<ActionHash> 
    std::panic::set_hook(Box::new(zome_panic_hook));
    /// Check
    let maybe_profile = find_latest_profile(agent_address.clone())?;
-   if let Some(profile) = maybe_profile {
+   if let Some(_profile) = maybe_profile {
       return error("Agent already has a Profile");
    }
    /// Create Entry
