@@ -15,7 +15,6 @@ crate-type = ["cdylib", "rlib"]
 workspace = true
 
 [dependencies]
-serde.workspace = true
 hdk.workspace = true
 zome_utils.workspace = true
 zome_signals.workspace = true

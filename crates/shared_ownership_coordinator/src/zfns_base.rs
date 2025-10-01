@@ -67,7 +67,7 @@ pub fn probe_shareds(_: ()) -> ExternResult<Vec<ActionHash>> {
   let ph = root_path.path_entry_hash()?;
   let links = get_links(link_input(ph, SharedOwnershipLinkType::SharedEntry, None))?;
   /// Emit signal
-  emit_links_signal(links.clone())?;
+  attest_links(links.clone())?;
   /// Done
   let shareds: Vec<ActionHash> = links
     .into_iter()

@@ -116,8 +116,8 @@ pub fn find_profile(agent_pub_key: AgentPubKey) -> ExternResult<Option<(ActionHa
    let Some((profile, record, link)) = find_latest_profile(agent_pub_key)?
       else { return Ok(None) };
    ///
-   emit_link_signal(link, StateChange::Create(false))?;
-   emit_new_entry_signal(record.clone(), false)?;
+   attest_link(link, StateChange::Create(false))?;
+   attest_entry_created(record.clone(), false)?;
    ///
    Ok(Some((record.action_address().to_owned(), profile)))
 }
@@ -170,7 +170,7 @@ pub fn probe_profiles(_: ()) -> ExternResult<()> {
       }
    }
    ///
-   emit_links_signal(links)?;
+   attest_links(links)?;
    ///
    Ok(())
 }

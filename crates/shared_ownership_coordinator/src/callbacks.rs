@@ -26,6 +26,6 @@ pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
 pub fn post_commit(signedActionList: Vec<SignedActionHashed>) {
    //debug!("SharedOwnership.post_commit() called for {} actions. ({})", signedActionList.len(), zome_info().unwrap().id);
    std::panic::set_hook(Box::new(zome_panic_hook));
-   emit_post_commit::<SharedOwnershipEntry, SharedOwnershipLinkType>(signedActionList);
+   attest_post_commit::<SharedOwnershipEntry, SharedOwnershipLinkType>(signedActionList);
 }
 

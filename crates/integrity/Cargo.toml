@@ -18,7 +18,8 @@ crate-type = ["cdylib", "rlib"]
 name = "hc_zome_profiles_integrity"
 
 [dependencies]
-derive_more = "0"
 serde.workspace = true
 
 hdi = { workspace = true }
+holochain_serialized_bytes = { workspace = true }
+

@@ -14,9 +14,9 @@ pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
 
 ///
 #[hdk_extern(infallible)]
-pub fn post_commit(signedActionList: Vec<SignedActionHashed>) {
-   debug!("ProfilesAlt post_commit() called for {} actions. ({})", signedActionList.len(), zome_info().unwrap().id);
+pub fn post_commit(signed_actions: Vec<SignedActionHashed>) {
+   debug!("ProfilesAlt post_commit() called for {} actions. ({})", signed_actions.len(), zome_info().unwrap().id);
    std::panic::set_hook(Box::new(zome_panic_hook));
-   emit_post_commit::<EntryTypes, LinkTypes>(signedActionList);
+   attest_post_commit::<EntryTypes, LinkTypes>(signed_actions);
 }
 
