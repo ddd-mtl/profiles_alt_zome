@@ -50,7 +50,7 @@ pub fn update_profile(pair: (Profile, AgentPubKey)) -> ExternResult<ActionHash> 
       else { return zome_error!("No profile to update"); };
    let new_ah = update_entry(previous_record.action_address().to_owned(), &profile)?;
    /// "Update" link
-   let _ = delete_link(previous_link.create_link_hash)?;
+   let _ = delete_link(previous_link.create_link_hash, GetOptions::default())?;
    let _ = create_link(
       agent_address.clone(),
       new_ah.clone(),
@@ -60,14 +60,14 @@ pub fn update_profile(pair: (Profile, AgentPubKey)) -> ExternResult<ActionHash> 
    /// If we have changed the nickname, remove the previous nickname link and add a new one
    if previous_profile.nickname.ne(&profile.nickname) {
       let previous_prefix_path = prefix_path(previous_profile.nickname)?;
-      let links = get_links(GetLinksInputBuilder::try_new(
+      let links = get_links(LinkQuery::try_new(
          AnyLinkableHash::from(previous_prefix_path.path_entry_hash()?),
          LinkTypes::PathToAgent,
-      )?.build())?;
+      )?, GetStrategy::Network)?;
       for l in links {
          if let Ok(pub_key) = AgentPubKey::try_from(l.target) {
             if agent_address.eq(&pub_key) {
-               delete_link(l.create_link_hash)?;
+               delete_link(l.create_link_hash, GetOptions::default())?;
             }
          }
       }
@@ -95,9 +95,9 @@ pub fn search_agents(nickname_filter: String) -> ExternResult<Vec<AgentPubKey>> 
    }
    ///
    let prefix_path = prefix_path(nickname_filter.clone())?;
-   let input = GetLinksInputBuilder::try_new(AnyLinkableHash::from(prefix_path.path_entry_hash()?), LinkTypes::PathToAgent)?
-       .tag_prefix(LinkTag::new(nickname_filter.to_lowercase().as_bytes().to_vec())).build();
-   let links = get_links(input)?;
+   let input = LinkQuery::try_new(AnyLinkableHash::from(prefix_path.path_entry_hash()?), LinkTypes::PathToAgent)?
+       .tag_prefix(LinkTag::new(nickname_filter.to_lowercase().as_bytes().to_vec()));
+   let links = get_links(input, GetStrategy::Network)?;
    ///
    let mut agents: Vec<AgentPubKey> = vec![];
    for link in links {
@@ -125,7 +125,7 @@ pub fn find_profile(agent_pub_key: AgentPubKey) -> ExternResult<Option<(ActionHa
 
 /// Return the latest profile for the given agent, if any
 pub fn find_latest_profile(agent_pub_key: AgentPubKey) -> ExternResult<Option<(Profile, Record, Link)>> {
-   let links = get_links(GetLinksInputBuilder::try_new(agent_pub_key, LinkTypes::AgentToProfile)?.build())?;
+   let links = get_links(LinkQuery::try_new(agent_pub_key, LinkTypes::AgentToProfile)?, GetStrategy::Network)?;
    if links.len() == 0 {
       return Ok(None);
    }

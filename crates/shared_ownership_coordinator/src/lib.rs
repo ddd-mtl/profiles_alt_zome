@@ -3,6 +3,8 @@ mod zfns_base;
 mod zfns_signals;
 mod zfns_key;
 
+pub use zfns_key::*;
+
 use hdk::prelude::*;
 
 #[hdk_extern]

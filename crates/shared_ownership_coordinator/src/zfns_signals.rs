@@ -32,7 +32,7 @@ pub fn offer_ownership(input: OfferOwnershipInput) -> ExternResult<()> {
     maybe_sign: None,
   };
   let data = encode(&app_tip).unwrap();
-  let tip: TipProtocol = TipProtocol::App(UnsafeBytes::from(data).into());
+  let tip: TipProtocol = TipProtocol::AppCustom(UnsafeBytes::from(data).into());
   return cast_tip(CastTipInput {tip, peers: vec![input.agent]});
 }
 
@@ -57,6 +57,6 @@ pub fn request_ownership(input: RequestOwnershipInput) -> ExternResult<()> {
     maybe_sign: Some(input.signature),
   };
   let data = encode(&app_tip).unwrap();
-  let tip: TipProtocol = TipProtocol::App(UnsafeBytes::from(data).into());
+  let tip: TipProtocol = TipProtocol::AppCustom(UnsafeBytes::from(data).into());
   return cast_tip(CastTipInput {tip, peers: vec![input.agent]});
 }

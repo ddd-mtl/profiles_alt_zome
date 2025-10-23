@@ -7,7 +7,7 @@ use shared_ownership_integrity::*;
 #[hdk_extern]
 pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
    debug!("SharedOwnership.init() CALLED");
-   let mut fns = BTreeSet::new();
+   let mut fns = HashSet::new();
    fns.insert((zome_info()?.name, FunctionName("recv_remote_signal".into())));
    fns.insert((zome_info()?.name, FunctionName("recv_shared_key".into())));
    let cap_grant_entry: CapGrantEntry = CapGrantEntry::new(

@@ -106,7 +106,7 @@ pub fn request_shared_key(input: RequestKeyInput) -> ExternResult<()> {
     maybe_sign: None,
   };
   let data = encode(&app_tip).unwrap();
-  let tip: TipProtocol = TipProtocol::App(UnsafeBytes::from(data).into());
+  let tip: TipProtocol = TipProtocol::AppCustom(UnsafeBytes::from(data).into());
   ///
   let agent = if let Some(agent) = input.maybe_agent { agent } else {
     let owners = probe_owners(input.shared_ah)?;

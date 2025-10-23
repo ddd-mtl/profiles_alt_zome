@@ -65,7 +65,7 @@ pub fn probe_shareds(_: ()) -> ExternResult<Vec<ActionHash>> {
   std::panic::set_hook(Box::new(zome_panic_hook));
   let root_path = Path::from(ROOT_ANCHOR_SHAREDS).typed(SharedOwnershipLinkType::SharedPath)?;
   let ph = root_path.path_entry_hash()?;
-  let links = get_links(link_input(ph, SharedOwnershipLinkType::SharedEntry, None))?;
+  let links = get_links(LinkQuery::new(ph, SharedOwnershipLinkType::SharedEntry.try_into_filter().unwrap()), GetStrategy::Network)?;
   /// Emit signal
   attest_links(links.clone())?;
   /// Done
@@ -81,7 +81,7 @@ pub fn probe_shareds(_: ()) -> ExternResult<Vec<ActionHash>> {
 #[hdk_extern]
 pub fn probe_owners(shared_ah: ActionHash) -> ExternResult<Vec<(AgentPubKey, ActionHash)>> {
   std::panic::set_hook(Box::new(zome_panic_hook));
-  let links = get_links(link_input(shared_ah, SharedOwnershipLinkType::Owner, None))?;
+  let links = get_links(LinkQuery::new(shared_ah, SharedOwnershipLinkType::Owner.try_into_filter().unwrap()), GetStrategy::Network)?;
   let pairs = links
     .into_iter()
     .map(|link| {
